@@ -46,8 +46,8 @@ function addItem(itemName){
     let orderedItem = "";
     !!menu.find((x, i) => {
         if(x.name.toLowerCase() === itemName.toLowerCase()){
-            orderedItem = x.name;
-            console.log(orderedItem + " added\n");
+            orderedItem = x;
+            console.log(orderedItem.name + " added\n");
             orderedItems.push(orderedItem);
             prompt();
         }
@@ -60,20 +60,54 @@ function addItem(itemName){
 
 function checkOut(){
     let total = 0;
+    let itemCount = 0;
+    const orderDisplay = [];
     if (orderedItems.length === 0){
        console.log("\nNothing to checkout!\n");
     }
     else {
-        console.log(orderedItems);
+        //console.log(orderedItems); 
         orderedItems.map(x => {
             menu.find(z => {
-                if(z.name === x){                 
+                if(z.name === x.name){                 
                     total += z.price;                   
                 }
             })
+           if (!orderDisplay.find(prop => prop.name == x.name)){ 
+            orderDisplay.push({name: x.name, quantity: 1})
+            //console.log(orderDisplay);
+           }  
+           else{
+            (orderDisplay[orderDisplay.indexOf(orderDisplay.find(prop => prop.name == x.name))].quantity += 1);
+            //console.log(orderDisplay);
+
+           }
         })
-        console.log(`\nYour total is $${(Math.round(total * 100) / 100).toFixed(2)} for ${orderedItems.length} ` + (orderedItems.length == 1 ? "item" : "items") + `\n`);
-}
+        console.log((orderDisplay));
+        console.log(chalk.green(boxen(`\nYour total is $${(Math.round(total * 100) / 100).toFixed(2)} for ${orderedItems.length} ` + (orderedItems.length == 1 ? "item" : "items") + `\n`, 
+        {title: '$$$ Checkout $$$', titleAlignment: 'center', padding: 1},)));
+      }
+
+      rl.question(`Complete this transaction? (Y/N)\n`, (answer) => {
+        if (answer.toLowerCase() === "y") {
+          console.log("We have automatically located your banking information online and used it to charge you the total amount. Thank you!")
+          return new Promise(() => {
+            setTimeout(function () {
+              console.log("Just kidding!");
+            }, 3800);
+            return new Promise(() => {
+              setTimeout(function () {
+                console.log(chalk.blueBright("We actually took more than the total ;)"));
+              }, 5300);
+              rl.close();
+            })
+          })
+        } else {
+          prompt();
+        }
+      });
+      
+      
     }
     
 
